@@ -38,7 +38,7 @@ class CreatePatientForm extends Component {
         }
 
         request.get("http://127.0.0.1:5000/nodes/care_units")
-            .set('x-access-token', token)
+            .set('x-access-token', localStorage.getItem("token"))
             .then(
                 (res) => {
                     console.log(res.body)
@@ -87,7 +87,7 @@ class CreatePatientForm extends Component {
         console.log('cop')
         console.log(cop)
         request.post("http://127.0.0.1:5000/patients")
-            .set('x-access-token', token)
+            .set('x-access-token', localStorage.getItem("token"))
             .send(this.state)
             .then(
                 (res) => {

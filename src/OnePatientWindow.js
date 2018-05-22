@@ -16,7 +16,7 @@ class PatientTab extends Component {
         let url = "http://127.0.0.1:5000/patients/" + id
         request
             .get(url)
-            .set('x-access-token', this.props.token)
+            .set('x-access-token', localStorage.getItem("token"))
             .then(
                 (res) => {
                     console.log(res.body)
@@ -37,7 +37,7 @@ class PatientTab extends Component {
         let url = "http://127.0.0.1:5000/documents";
         request
             .post(url)
-            .set('x-access-token', this.props.token)
+            .set('x-access-token', localStorage.getItem("token"))
             .send(document)
             .then(
                 (res) => {
@@ -58,7 +58,7 @@ class PatientTab extends Component {
         let url = "http://127.0.0.1:5000/staffs/asking_staff";
         request
             .get(url)
-            .set('x-access-token', this.props.token)
+            .set('x-access-token', localStorage.getItem("token"))
             .then(
                 (res) => {
                     this.setState(
@@ -89,14 +89,11 @@ class PatientTab extends Component {
 
         this.get_patient_info(this.props.patientId)
         this.get_asking_staff()
-
     }
 
 
     postDocumentOnServerSide(row) {
-
         var new_patient_info = {};
-
         var document = {};
         document.description = row.description;
         document.status = row.status;
@@ -117,7 +114,7 @@ class PatientTab extends Component {
         if (this.state.dataReceived) {
             return (
                 <div>
-                    <PatientProfilCard patientInfo={this.state.patientInfo}/>
+                    <PatientProfilCard patientInfo={this.state.patientInfo} node_dict={this.props.node_dict}/>
 
                     <BootstrapTable data={this.state.patientInfo.documents} striped hover insertRow={true} options={ options }>
 

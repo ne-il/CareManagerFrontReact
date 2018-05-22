@@ -33,6 +33,11 @@ class PatientProfilCard extends Component {
             <div>
                 Lieu de naissance: {this.props.patientInfo.place_of_birth}
             </div>
+
+            <div>
+                Unité de soins: {this.props.node_dict[this.props.patientInfo.node_id]}
+            </div>
+
         </div>
     }
 

@@ -35,6 +35,7 @@ class LoginForm extends Component {
             .then(
                 (res) => {
                     console.log(res.body.token)
+                    localStorage.setItem("token", res.body.token)
                 },
                 (err) =>
                     this.setState({

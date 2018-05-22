@@ -5,7 +5,7 @@ import HeaderReactTuto from "./HeaderReactTuto";
 import LoginForm from "./loginForm";
 import DateTest from "./DateTest"
 import PrimReacLoginForm from "./PrimReacLoginForm"
-import PatientTab from "./PatientTab";
+import PatientListPage from "./PatientListPage";
 import OnePatientWindow from "./OnePatientWindow";
 import TreeViewer from "./TreeViewer";
 import CreatePatientForm from "./CreatePatientForm";
@@ -15,21 +15,24 @@ import request from "superagent";
 import {ProgressSpinner} from 'primereact/components/progressspinner/ProgressSpinner';
 
 
-
 class App extends Component {
-    constructor(){
+    constructor() {
         super()
         this.state = {
-            token:"",
-            email:"nanteur",
-            password:"youpikaye",
+            email: "nanteur",
+            password: "youpikaye",
             // email:"admin",
             // password:"admin",
-            show: false
+            show: false,
+            asking_staff:{},
+            token_received:false
         }
 
         this.getToken = this.getToken.bind(this)
-        this.getToken();
+        this.get_asking_staff = this.get_asking_staff.bind(this)
+        this.getToken()
+
+
     }
 
     getToken() {
@@ -37,35 +40,60 @@ class App extends Component {
             .auth(this.state.email, this.state.password)
             .then(
                 (res) => {
-                    this.setState({token: res.body.token})
+                    // Save data to sessionStorage
+                    localStorage.setItem("token", res.body.token);
+                    this.setState({token_received: true})
+                    this.get_asking_staff(res.body.token)
+
                 },
                 (err) =>
                     console.log(err.response)
             )
     }
 
+    get_asking_staff(token){
+        let url = "http://127.0.0.1:5000/staffs/asking_staff";
+        request
+            .get(url)
+            .set('x-access-token', token)
+            .then(
+                (res) => {
+                    this.setState(
+                        {
+                            asking_staff: res.body
+                        }
+                    )
+                },
+                (err) => {
+                    console.error(err.response)
+                }
+            )
+    }
+
     render() {
-        if(this.state.token.length == 0){
+        if (!( this.state.token_received)) {
+            debugger
             return <ProgressSpinner/>
         }
-        else{
+        else {
+            debugger
             return <div>
-                <HeaderReactTuto />
+                <HeaderReactTuto/>
                 {/*<PrimReacLoginForm/>*/}
                 {/*<LoginForm/>*/}
-                <PatientTab token={this.state.token}/>
-                {/*<OnePatientWindow token={this.state.token} patientId={11}/>*/}
-                {/*<TreeViewer token={this.state.token}/>*/}
-                {/*<CreatePatientForm token={this.state.token}/>*/}
-                {/*<PopUpCreatePatient token={this.state.token} show={this.state.show}/>*/}
-                <Button
-                    block
-                    bsSize="large"
-                    type="submit"
-                    onClick={()=>{this.setState({show:true})}}
-                >
-                    Patient
-                </Button>
+                <PatientListPage />
+                {/*<OnePatientWindow  patientId={11}/>*/}
+                {/*<TreeViewer />*/}
+                {/*<CreatePatientForm />*/}
+                {/*<PopUpCreatePatient  show={this.state.show}/>*/}
+                {/*<Button*/}
+                {/*block*/}
+                {/*bsSize="large"*/}
+                {/*type="submit"*/}
+                {/*onClick={()=>{this.setState({show:true})}}*/}
+                {/*>*/}
+                {/*Patient*/}
+                {/*</Button>*/}
             </div>
         }
 

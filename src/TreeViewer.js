@@ -22,9 +22,6 @@ class TreeViewer extends Component {
 
     constructor(props) {
 
-
-        var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YTIxMGY4MC1mZjQzLTQ5ZjktOTViZS1mMjMzNmQzMTZmY2MiLCJleHAiOjE1MjY0Mjc1NDZ9.D_d6a-1UkCpY6X686stuLmKYaCwPOoAbsqvipVw_j3k"
-
         super(props);
 
         this.onSelectionChange = this.onSelectionChange.bind(this);

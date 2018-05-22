@@ -8,8 +8,6 @@ import {
 import CreatePatientForm from './CreatePatientForm'
 import request from "superagent";
 
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwdWJsaWNfaWQiOiI4YTIxMGY4MC1mZjQzLTQ5ZjktOTViZS1mMjMzNmQzMTZmY2MiLCJleHAiOjE1MjY1NjE2NzJ9.7U88_Voxi7QYanbzD4Un34fEkffbBgIKgK8cHudnPgo'
-
 class PopUpCreatePatient extends Component {
 
 
