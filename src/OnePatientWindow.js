@@ -33,7 +33,7 @@ class PatientTab extends Component {
             )
     }
 
-    post_document(document){
+    post_staff(document){
         let url = "http://127.0.0.1:5000/documents";
         request
             .post(url)
@@ -76,10 +76,10 @@ class PatientTab extends Component {
     constructor(props) {
 
         super(props);
-        this.postDocumentOnServerSide = this.postDocumentOnServerSide.bind(this)
+        this.postStaffOnServerSide = this.postDocumentOnServerSide.bind(this)
         this.get_patient_info = this.get_patient_info.bind(this)
         this.get_asking_staff = this.get_asking_staff.bind(this)
-        this.post_document = this.post_document.bind(this)
+        this.post_staff = this.post_staff.bind(this)
 
         this.state = {
             dataReceived: false,
@@ -103,7 +103,7 @@ class PatientTab extends Component {
         document.type = row.type;
         document.author_id = this.state.asking_staff.id
         document.patient_id = this.state.patientInfo.id
-        this.post_document(document)
+        this.post_staff(document)
 
     }
 

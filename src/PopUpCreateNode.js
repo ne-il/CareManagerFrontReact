@@ -5,10 +5,9 @@ import {
     Button,
     Modal
 } from 'react-bootstrap';
-import CreatePatientForm from './CreatePatientForm'
-import request from "superagent";
+import CreateNodeForm from './CreateNodeForm'
 
-class PopUpCreateUpdatePatient extends Component {
+class PopUpCreateNode extends Component {
     constructor(props) {
         super(props);
         this.handleShow = this.handleShow.bind(this);
@@ -42,14 +41,14 @@ class PopUpCreateUpdatePatient extends Component {
 
         return <div className="static-modal">
             <Modal show={this.props.show}
-                          onHide={this.props.updateParentTable}
+                          onHide={this.props.updateParentTree}
                           dialogClassName="custom-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
-                    <CreatePatientForm closeThePopUp={this.props.updateParentTree} />
+                    <CreateNodeForm closeThePopUp={this.props.updateParentTree} fatherNode={this.props.selectedNode}/>
                 </Modal.Body>
 
             </Modal>
@@ -59,5 +58,5 @@ class PopUpCreateUpdatePatient extends Component {
 
 }
 
-export default PopUpCreateUpdatePatient;
+export default PopUpCreateNode;
 

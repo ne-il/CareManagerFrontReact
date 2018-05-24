@@ -44,6 +44,8 @@ class LoginForm extends Component {
                             (res) => {
                                 if (res.body.type == "DOCTOR" || res.body.type == "NURSE" || res.body.type == "SECRETARY")
                                     this.props.history.push('/patientList')
+                                else if (res.body.type == "ADMIN")
+                                    this.props.history.push('/admin')
                             },
                             (err) => {
                                 console.error(err.response)
