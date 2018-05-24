@@ -5,6 +5,8 @@ import request from "superagent";
 import {ProgressSpinner} from 'primereact/components/progressspinner/ProgressSpinner';
 import OnePatientWindow from "./OnePatientWindow";
 import PatientListTable from "./PatientListTable";
+import PopUpCreateUpdatePatient from './PopUpCreateUpdatePatient'
+import {Button} from "react-bootstrap"
 
 
 class PatientListPage extends Component {
@@ -18,14 +20,28 @@ class PatientListPage extends Component {
         this.state = {
             dataReceived: false,
             patientList: [],
-            patientClicked: false,
-            selectedPatientId: '',
-            node_dict: {}
+            node_dict: {},
+            asking_staff:{},
+            showPopUp:false,
+            updateMode:false,
+            onRowSelect:{}
         }
+        this.getPatientList = this.getPatientList.bind(this);
+        this.get_asking_staff = this.get_asking_staff.bind(this);
+        this.onRowSelectMedicalStaff = this.onRowSelectMedicalStaff.bind(this);
+        this.onRowSelectSecretary = this.onRowSelectSecretary.bind(this);
+        this.clickCreatePatient = this.clickCreatePatient.bind(this);
+        this.updateAfterPatientPost = this.updateAfterPatientPost.bind(this);
+
         this.getPatientList();
-        this.getNodeList();
-        this.onRowSelect = this.onRowSelect.bind(this);
+
     }
+
+    updateAfterPatientPost(){
+        this.setState({showPopUp:false})
+        this.getPatientList()
+    }
+
 
 
     getPatientList() {
@@ -34,17 +50,15 @@ class PatientListPage extends Component {
             .set('x-access-token', localStorage.getItem("token"))
             .then(
                 (res) => {
-                    console.log("SUCCES")
-                    console.log(res.body)
-                    this.setState(
-                        {
-                            dataReceived: true,
-                            patientList: res.body
-                        }
-                    )
+                    this.setState({patientList: res.body})
+                    this.getNodeList()
                 },
                 (err) => {
-                    console.log(err.response)
+                    console.error(err.response)
+                    if(err.status == 401){
+                        alert(err.response.text)
+                        this.props.history.push('/login')
+                    }
                 }
             )
     }
@@ -59,43 +73,83 @@ class PatientListPage extends Component {
                         console.log(res.body[i])
                         tmp[res.body[i].id] = res.body[i].label
                     }
-                    this.setState(
-                        {
-                            node_dict: tmp,
-                        }
-                    )
+                    this.setState({node_dict: tmp,})
+                    this.get_asking_staff()
                 },
                 (err) => {
-                    console.log(err.response)
+                    console.error(err.response)
+                    if(err.status == 401){
+                        alert(err.response.text)
+                        this.props.history.push('/login')
+                    }
                 }
             )
     }
 
-
-    onRowSelect(row, isSelected, e) {
-        this.setState(
-            {
-                patientClicked: true,
-                selectedPatientId: row.id
-            }
-        )
+    get_asking_staff(){
+        let url = "http://127.0.0.1:5000/staffs/asking_staff";
+        request
+            .get(url)
+            .set('x-access-token', localStorage.getItem("token"))
+            .then(
+                (res) => {
+                    var onSelect={}
+                    if (res.body.type == "SECRETARY")
+                        onSelect = this.onRowSelectSecretary
+                    else
+                        onSelect = this.onRowSelectMedicalStaff
+                    this.setState({asking_staff: res.body, dataReceived: true, onRowSelect: onSelect})
+                },
+                (err) => {
+                    console.error(err.response)
+                    if(err.status == 401){
+                        alert(err.response.text)
+                        this.props.history.push('/login')
+                    }
+                }
+            )
     }
 
-    render() {
-        if (this.state.dataReceived) {
-            if (this.state.patientClicked) {
-                return <OnePatientWindow patientId={this.state.selectedPatientId} node_dict={this.state.node_dict}/>
-            }
-            else {
-                return (
-                    <PatientListTable node_dict={this.state.node_dict} onRowSelect={this.onRowSelect} patientList={this.state.patientList}/>
-                )
-            }
+    onRowSelectMedicalStaff(row, isSelected, e) {
+        var url = '/OneGuy/' + row.id;
+        this.props.history.push(url)
+    }
 
-        }
-        else {
+    onRowSelectSecretary(row, isSelected, e) {
+        this.setState({selectedPatient:row, showPopUp:true, updateMode: true})
+    }
+
+
+    clickCreatePatient() {
+        this.setState({showPopUp:true, updateMode: false, selectedPatient: {} })
+    }
+
+
+    render() {
+        var secretarySection = ""
+
+        if (!this.state.dataReceived) {
             return <ProgressSpinner/>
         }
+        if(this.state.asking_staff.type == "SECRETARY"){
+            secretarySection = <div>
+                <PopUpCreateUpdatePatient show={this.state.showPopUp} updateMode={this.state.updateMode} selectedPatient={this.state.selectedPatient} updateParentTable={this.updateAfterPatientPost}/>
+                <Button onClick={this.clickCreatePatient}>
+                    Créer un nouveau Patient
+                </Button>
+            </div>
+        }
+
+
+        return (
+            <div>
+                {secretarySection}
+                <PatientListTable node_dict={this.state.node_dict} onRowSelect={this.state.onRowSelect}
+                                  patientList={this.state.patientList}/>
+
+            </div>
+
+        )
     }
 
 }

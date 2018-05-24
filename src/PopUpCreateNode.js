@@ -8,10 +8,7 @@ import {
 import CreatePatientForm from './CreatePatientForm'
 import request from "superagent";
 
-class PopUpCreatePatient extends Component {
-
-
-
+class PopUpCreateUpdatePatient extends Component {
     constructor(props) {
         super(props);
         this.handleShow = this.handleShow.bind(this);
@@ -28,6 +25,7 @@ class PopUpCreatePatient extends Component {
 
     handleHide() {
         this.setState({ show: false });
+        // this.props.updateParentTable();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -40,19 +38,18 @@ class PopUpCreatePatient extends Component {
     }
 
     render() {
+        var title = "Creation d'un nouveau Noeud"
+
         return <div className="static-modal">
-            <Modal show={this.state.show}
-                          onHide={this.handleHide}
+            <Modal show={this.props.show}
+                          onHide={this.props.updateParentTable}
                           dialogClassName="custom-modal">
                 <Modal.Header closeButton>
-                    <Modal.Title>Creation d'un patient</Modal.Title>
+                    <Modal.Title>{title}</Modal.Title>
                 </Modal.Header>
 
-
                 <Modal.Body>
-
-                    <CreatePatientForm closeThePopUp={this.handleHide} bordel={"kdkjeid"}/>
-
+                    <CreatePatientForm closeThePopUp={this.props.updateParentTree} />
                 </Modal.Body>
 
             </Modal>
@@ -62,5 +59,5 @@ class PopUpCreatePatient extends Component {
 
 }
 
-export default PopUpCreatePatient;
+export default PopUpCreateUpdatePatient;
 

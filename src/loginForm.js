@@ -36,6 +36,23 @@ class LoginForm extends Component {
                 (res) => {
                     console.log(res.body.token)
                     localStorage.setItem("token", res.body.token)
+                    let url = "http://127.0.0.1:5000/staffs/asking_staff";
+                    request
+                        .get(url)
+                        .set('x-access-token', localStorage.getItem("token"))
+                        .then(
+                            (res) => {
+                                if (res.body.type == "DOCTOR" || res.body.type == "NURSE" || res.body.type == "SECRETARY")
+                                    this.props.history.push('/patientList')
+                            },
+                            (err) => {
+                                console.error(err.response)
+                                if(err.status == 401){
+                                    alert(err.response.text)
+                                    this.props.history.push('/login')
+                                }
+                            }
+                        )
                 },
                 (err) =>
                     this.setState({

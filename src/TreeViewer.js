@@ -21,23 +21,16 @@ class TreeViewer extends Component {
     }
 
     constructor(props) {
-
         super(props);
-
-        this.onSelectionChange = this.onSelectionChange.bind(this);
 
         this.state = {
             dataReceived: false,
             masterNode: ""
         }
-        console.log("ON LANCE LA REQUETE")
         request
             .get("http://127.0.0.1:5000/nodes/tree")
             .then(
                 (res) => {
-                    console.log("SUCCES")
-                    console.log(res.body)
-
                     this.setState(
                         {
                             dataReceived: true,
@@ -49,8 +42,7 @@ class TreeViewer extends Component {
                     console.log("erreur")
                 }
             )
-
-
+        this.onSelectionChange = this.onSelectionChange.bind(this);
     }
 
 

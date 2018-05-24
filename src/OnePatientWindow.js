@@ -85,10 +85,13 @@ class PatientTab extends Component {
             dataReceived: false,
             patientInfo: "",
             asking_staff: "",
+            node_dict: {}
         }
 
-        this.get_patient_info(this.props.patientId)
+        // this.get_patient_info(this.props.patientId)
+        this.get_patient_info(this.props.match.params.id)
         this.get_asking_staff()
+        this.getNodeList()
     }
 
 
@@ -101,6 +104,29 @@ class PatientTab extends Component {
         document.author_id = this.state.asking_staff.id
         document.patient_id = this.state.patientInfo.id
         this.post_document(document)
+
+    }
+
+    getNodeList() {
+        request.get("http://127.0.0.1:5000/nodes")
+            .set('x-access-token', localStorage.getItem("token"))
+            .then(
+                (res) => {
+                    var tmp = {}
+                    for (var i in res.body) {
+                        console.log(res.body[i])
+                        tmp[res.body[i].id] = res.body[i].label
+                    }
+                    this.setState(
+                        {
+                            node_dict: tmp,
+                        }
+                    )
+                },
+                (err) => {
+                    console.log(err.response)
+                }
+            )
     }
 
 
@@ -111,23 +137,23 @@ class PatientTab extends Component {
             afterInsertRow: this.postDocumentOnServerSide,   // A hook for after insert rows
             insertText: 'Ajouter un document',
         };
+        var documentTable = ""
+        if(this.state.asking_staff.type != "SECRETARY"){
+            documentTable = <BootstrapTable data={this.state.patientInfo.documents} striped hover insertRow={true} options={ options }>
+
+                <TableHeaderColumn isKey dataField='id' isKey={ true } autoValue={true}>document ID</TableHeaderColumn>
+                <TableHeaderColumn dataField='type' editable={ { type: 'select', options: { values: documentTypes }}} >type</TableHeaderColumn>
+                <TableHeaderColumn dataField='description' editable={ { type: 'textarea' } }  >description</TableHeaderColumn>
+                <TableHeaderColumn dataField='author_id' hiddenOnInsert>author_id</TableHeaderColumn>
+                <TableHeaderColumn dataField='status' editable={ { type: 'checkbox', options: { values: 'IN_PROGRESS:VALIDATED' } } } hidden>SAVE AS DRAFT ?</TableHeaderColumn>
+            </BootstrapTable>
+        }
+
         if (this.state.dataReceived) {
             return (
                 <div>
-                    <PatientProfilCard patientInfo={this.state.patientInfo} node_dict={this.props.node_dict}/>
-
-                    <BootstrapTable data={this.state.patientInfo.documents} striped hover insertRow={true} options={ options }>
-
-                        <TableHeaderColumn isKey dataField='id' isKey={ true } autoValue={true}>document ID</TableHeaderColumn>
-
-                        <TableHeaderColumn dataField='type' editable={ { type: 'select', options: { values: documentTypes }}} >type</TableHeaderColumn>
-
-                        <TableHeaderColumn dataField='description' editable={ { type: 'textarea' } }  >description</TableHeaderColumn>
-
-                        <TableHeaderColumn dataField='author_id' hiddenOnInsert>author_id</TableHeaderColumn>
-
-                        <TableHeaderColumn dataField='status' editable={ { type: 'checkbox', options: { values: 'IN_PROGRESS:VALIDATED' } } } hidden>SAVE AS DRAFT ?</TableHeaderColumn>
-                    </BootstrapTable>
+                    <PatientProfilCard patientInfo={this.state.patientInfo} node_dict={this.state.node_dict}/>
+                    {documentTable}
                 </div>
             )
         }
